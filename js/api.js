@@ -10,12 +10,10 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Universidad Politécnica de Yucatán (UPY)", lat: 20.9886, lon: -89.7375 }
     ];
 
-    // ---  SISTEMA MULTIRUTAS ---
-    // Solo agrega aquí el nombre de tus archivos .geojson (sin la extensión)
+    // --- SISTEMA MULTIRUTAS ---
     const rutasDisponibles = ['72', 'Periferico', '92']; 
-    const puntosPorRuta = {}; // Guardará los puntos de cada ruta
+    const puntosPorRuta = {}; 
 
-    // Cargamos todas las rutas de la lista
     for (let nombreRuta of rutasDisponibles) {
         try {
             const resRuta = await fetch(`./rutas/${nombreRuta}.geojson`);
@@ -37,13 +35,12 @@ export async function cargarEscuelas(mapa) {
             for (let punto of puntos) {
                 if (latlng.distanceTo(punto) <= 1000) {
                     cercanas.push(ruta);
-                    break; // Ya sabemos que pasa cerca, pasamos a evaluar la siguiente ruta
+                    break; 
                 }
             }
         }
         return cercanas;
     };
-    // --------------------------------
 
     const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
 
@@ -52,22 +49,55 @@ export async function cargarEscuelas(mapa) {
         const data = await response.json();
         cargandoDiv.style.display = 'none';
 
-        const procesar = (nombre, lat, lon) => {
+        // Función procesar adaptada para el diseño de la Agencia
+        const procesar = (nombre, lat, lon, esAgencia = false) => {
             const markerLatlng = L.latLng(lat, lon);
-            const marker = L.marker(markerLatlng, { 
-                icon: L.divIcon({ html: `<div class="pin-academico pin-uni">🎓</div>`, iconSize: [25, 25] }) 
-            }).addTo(mapa);
             
+            // Ícono por defecto (Universidades/Prepas)
+            let opcionesIcono = { icon: L.divIcon({ html: `<div class="pin-academico pin-uni">🎓</div>`, iconSize: [25, 25] }) };
+            
+            // Si es la agencia, le ponemos el pin rojo tradicional de Leaflet
+            if(esAgencia) {
+                opcionesIcono = {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                };
+            }
+
+            const marker = L.marker(markerLatlng, opcionesIcono).addTo(mapa);
             const div = document.createElement('div');
-            div.innerHTML = `<h3>${nombre}</h3>`;
             
-            // Obtenemos las rutas que pasan por esta universidad
+            // HTML condicional: Requisitos si es agencia, solo título si es escuela
+            if(esAgencia) {
+                div.innerHTML = `
+                    <div style="min-width: 220px; font-family: sans-serif;">
+                        <h3 style="margin-bottom: 5px; color: #004a99;">${nombre}</h3>
+                        <p style="margin-top: 0; font-size: 14px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+                            Trámite de Credencial de Estudiante
+                        </p>
+                        <p style="font-size: 13px; margin-bottom: 5px;"><strong>Requisitos indispensables:</strong></p>
+                        <ul style="font-size: 13px; margin-top: 0; padding-left: 20px;">
+                            <li>Constancia de estudios vigente</li>
+                            <li>Comprobante de domicilio</li>
+                            <li>CURP</li>
+                        </ul>
+                    </div>`;
+            } else {
+                div.innerHTML = `<h3>${nombre}</h3>`;
+            }
+
+            // Obtenemos las rutas de tu GeoJSON que pasan a menos de 1km
             const rutasCercanas = obtenerRutasCercanas(markerLatlng);
             
             if (rutasCercanas.length > 0) {
                 div.innerHTML += `<p style="font-size:12px; margin-bottom:5px;">Rutas a menos de 1km:</p>`;
                 
-                // Creamos un botón naranja por cada ruta cercana
                 rutasCercanas.forEach(ruta => {
                     const btnVer = document.createElement('button');
                     btnVer.innerText = `Ver Ruta ${ruta}`;
@@ -76,7 +106,6 @@ export async function cargarEscuelas(mapa) {
                     div.appendChild(btnVer);
                 });
 
-                // Botón rojo general para limpiar el mapa
                 const btnOcultar = document.createElement('button');
                 btnOcultar.innerText = "Quitar Ruta";
                 btnOcultar.style.cssText = "width:100%; padding:8px; background:#e74c3c; color:white; border:none; cursor:pointer; border-radius: 4px; margin-top: 5px;";
@@ -90,17 +119,21 @@ export async function cargarEscuelas(mapa) {
             listaMarcadores.push({ nombre, marker });
         };
 
+        // Filtrado de instituciones (Permite Universidades y Prepas, bloquea educación básica)
         data.elements.forEach(el => {
             const nombre = el.tags.name || "";
-            const esSuperior = /universidad|facultad|instituto tecn|anahuac|marista|enes|uady|politécnica|humanitas/i.test(nombre);
-            const esBasicaOPrepa = /primaria|secundaria|kinder|jardin|preescolar|telesecundaria|prepa|bachiller/i.test(nombre);
-            
-            if (esSuperior && !esBasicaOPrepa) {
+            const esSuperior = /universidad|facultad|instituto tecn|anahuac|marista|enes|uady|politécnica|humanitas|prepa|bachiller|colegio/i.test(nombre);
+            const esBasica = /primaria|secundaria|kinder|jardin|preescolar|telesecundaria/i.test(nombre);
+
+            if (esSuperior && !esBasica) {
                 procesar(nombre, el.lat || el.center.lat, el.lon || el.center.lon);
             }
         });
 
         manuales.forEach(m => procesar(m.nombre, m.lat, m.lon));
+
+        // Añadir Agencia de Transporte de Yucatán (Se manda el valor 'true' al final para activar el diseño especial)
+        procesar("Agencia de Transporte de Yucatán", 20.9753, -89.6268, true);
 
     } catch (err) {
         console.error("Error al cargar datos:", err);
