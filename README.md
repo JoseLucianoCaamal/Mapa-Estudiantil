@@ -1,4 +1,4 @@
-#Mapa Estudiantil - Mérida 🎓
+# Mapa Estudiantil - Mérida 🎓
 
 Un mapa web interactivo diseñado para ayudar a los estudiantes de Mérida, Yucatán, a encontrar las rutas de transporte público que pasan cerca de sus centros educativos. El mapa filtra dinámicamente instituciones de nivel medio superior y superior, y calcula con precisión si las rutas de autobús pasan dentro de un radio útil para el estudiante.
 
