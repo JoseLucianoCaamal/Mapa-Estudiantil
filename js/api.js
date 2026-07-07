@@ -87,7 +87,7 @@ export async function cargarEscuelas(mapa) {
 
         const icono = L.icon({
             iconUrl: urlIcono,
-            iconSize: [48, 48],   // Puedes ajustar este tamaño si quieres que los super sean más pequeños
+            iconSize: [32, 32],   
             iconAnchor: [24, 24],
             popupAnchor: [0, -24]
         });
