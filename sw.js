@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mapa-estudiantil-v8'; 
+const CACHE_NAME = 'mapa-estudiantil-v9'; 
 
 const urlsToCache = [
   './',

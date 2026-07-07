@@ -9,7 +9,7 @@ export async function cargarEscuelas(mapa) {
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355 },
         { nombre: "Universidad Politécnica de Yucatán (UPY)", lat: 20.9886, lon: -89.7375 },
         { nombre: "Universidad Modelo", lat: 21.0042, lon: -89.6187 },
-        { nombre: "Facultad de Medicina UADY", lat: 20.9738, lon: -89.6278 },
+        { nombre: "Facultad de Medicina UADY", lat: 20.973857, lon: -89.640133 },
         { nombre: "Universidad Vizcaya de las Américas", lat: 20.9790, lon: -89.6401 },
         { nombre: "Universidad Santander Yucatán", lat: 21.0021, lon: -89.6055 },
         { nombre: "UHAB Península de Yucatán", lat: 20.9850, lon: -89.6380 },
