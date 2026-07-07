@@ -6,6 +6,7 @@ export function activarGeolocalizacion(mapa) {
     let circuloUbicacion = null; 
     let rastreando = false;
 
+    // Variable global para que el enrutador sepa desde dónde caminar
     window.ubicacionActualUsuario = null; 
 
     btn.addEventListener('click', () => {
@@ -14,9 +15,10 @@ export function activarGeolocalizacion(mapa) {
             btn.style.backgroundColor = "#e74c3c";
             btn.style.color = "white";
             
+            // watch: true activa el seguimiento en tiempo real
             mapa.locate({
                 watch: true, 
-                setView: 'untilPan', 
+                setView: 'untilPan', // Te centra la primera vez, pero luego te deja deslizar el mapa libremente
                 maxZoom: 16, 
                 enableHighAccuracy: true
             });
@@ -33,6 +35,7 @@ export function activarGeolocalizacion(mapa) {
     mapa.on('locationfound', (e) => {
         window.ubicacionActualUsuario = e.latlng;
 
+        // Si es la primera vez que te encuentra, dibuja el círculo. Si ya existía, solo lo mueve a tu nuevo paso.
         if (!marcadorUsuario) {
             marcadorUsuario = L.marker(e.latlng).addTo(mapa);
             circuloUbicacion = L.circle(e.latlng, {
@@ -42,23 +45,6 @@ export function activarGeolocalizacion(mapa) {
         } else {
             marcadorUsuario.setLatLng(e.latlng);
             circuloUbicacion.setLatLng(e.latlng);
-        }
-
-        if (window.destinoPeatonal && !window.yaAvisoLlegada) {
-            const distanciaMetros = e.latlng.distanceTo(window.destinoPeatonal);
-            console.log(`📍 Distancia al destino: ${Math.round(distanciaMetros)} metros`);
-            
-            if (distanciaMetros <= 50) {
-                window.yaAvisoLlegada = true; 
-                
-                if (navigator.vibrate) {
-                    navigator.vibrate([200, 100, 200, 100, 500]);
-                }
-                
-                setTimeout(() => {
-                    alert("📍 ¡Llegaste! Estás a menos de 50 metros del paradero seleccionado.");
-                }, 500);
-            }
         }
     });
 
