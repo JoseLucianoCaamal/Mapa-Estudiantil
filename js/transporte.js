@@ -5,7 +5,9 @@ const coloresRutas = {
     '72': '#e74c3c',        // Rojo
     'Periferico': '#2ecc71',// Verde
     '92': '#9b59b6',        // Morado
-    '64_Castilla_Camara': 'hsl(236, 73%, 50%)'   
+    '64_Castilla_Camara': 'hsl(236, 73%, 50%)' ,
+    '1_Emiliano_Zapata_2_Paso_Texas': 'hsla(71, 79%, 49%, 0.51)',
+    '2_Periferico_Roble_San_Marcos': 'hsl(132, 42%, 14%)',
 };
 
 export function inicializarRutas(mapa) {
