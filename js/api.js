@@ -4,12 +4,12 @@ export async function cargarEscuelas(mapa) {
     const cargandoDiv = document.getElementById('cargando');
     cargandoDiv.style.display = 'block';
 
-    // 1. Coordenadas (Lista completa y corregida)
+    // 1. Lista maestra de coordenadas (Fuente de verdad)
     const manuales = [
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355 },
         { nombre: "Universidad Politécnica de Yucatán (UPY)", lat: 20.9886, lon: -89.7375 },
         { nombre: "Universidad Modelo", lat: 21.0042, lon: -89.6187 },
-        { nombre: "Facultad de Medicina UADY", lat: 20.973862, lon: -89.640117 },
+        { nombre: "Facultad de Medicina UADY", lat: 20.9738, lon: -89.6278 },
         { nombre: "Universidad Vizcaya de las Américas", lat: 20.9790, lon: -89.6401 },
         { nombre: "Universidad Santander Yucatán", lat: 21.0021, lon: -89.6055 },
         { nombre: "UHAB Península de Yucatán", lat: 20.9850, lon: -89.6380 },
@@ -40,7 +40,8 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Cecytey 06 Emiliano Zapata", lat: 20.9620, lon: -89.6020 }
     ];
 
-    // --- SISTEMA MULTIRUTAS ---
+    // --- LÓGICA DE RUTAS ---
+    localStorage.removeItem('escuelasCache'); 
     const rutasDisponibles = ['72', 'Periferico', '92']; 
     const puntosPorRuta = {}; 
 
@@ -52,7 +53,7 @@ export async function cargarEscuelas(mapa) {
             if (featureLinea) {
                 puntosPorRuta[nombreRuta] = featureLinea.geometry.coordinates.map(coord => L.latLng(coord[1], coord[0]));
             }
-        } catch (e) { console.warn(`No se encontró la ruta ${nombreRuta}`); }
+        } catch (e) { console.warn(`Error cargando ruta ${nombreRuta}`); }
     }
 
     const obtenerRutasCercanas = (latlng) => {
@@ -66,11 +67,10 @@ export async function cargarEscuelas(mapa) {
         return cercanas;
     };
     window.obtenerRutasGlobal = obtenerRutasCercanas;
-    
-    // --- LÓGICA DE API ---
-    const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
 
+    // --- CARGA DE API Y PROCESAMIENTO ---
     try {
+        const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
         const response = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(query) });
         const data = await response.json();
         cargandoDiv.style.display = 'none';
@@ -78,7 +78,7 @@ export async function cargarEscuelas(mapa) {
         let circuloActual = null;
 
         const procesar = (nombre, lat, lon, esAgencia = false) => {
-            const markerLatlng = L.latLng(lat, lon);
+            const markerLatlng = L.latLng(parseFloat(lat), parseFloat(lon));
             
             let opcionesIcono = {
                 icon: L.icon({
@@ -110,11 +110,7 @@ export async function cargarEscuelas(mapa) {
             });
 
             const div = document.createElement('div');
-            if(esAgencia) {
-                div.innerHTML = `<div style="min-width: 220px;"><h3>${nombre}</h3><p>Trámite de Credencial</p></div>`;
-            } else {
-                div.innerHTML = `<h3>${nombre}</h3>`;
-            }
+            div.innerHTML = esAgencia ? `<h3>${nombre}</h3><p>Trámite de Credencial</p>` : `<h3>${nombre}</h3>`;
 
             const rutasCercanas = obtenerRutasCercanas(markerLatlng);
             if (rutasCercanas.length > 0) {
