@@ -144,6 +144,14 @@ export async function cargarEscuelas(mapa) {
                 btnOcultar.style.cssText = "width:100%; padding:8px; background:#e74c3c; color:white; border:none; cursor:pointer; border-radius: 4px; margin-top: 5px;";
                 btnOcultar.onclick = () => { if (window.limpiarRuta) window.limpiarRuta(); };
                 div.appendChild(btnOcultar);
+                
+                // --- NUEVO: BOTÓN PARA CAMINAR HASTA LA ESCUELA ---
+                const btnCaminar = document.createElement('button');
+                btnCaminar.innerText = "🚶 Caminar hasta aquí";
+                btnCaminar.style.cssText = "width:100%; padding:8px; background:#8e44ad; color:white; border:none; cursor:pointer; border-radius: 4px; margin-top: 5px;";
+                btnCaminar.onclick = () => { if (window.trazarRutaPeatonal) window.trazarRutaPeatonal(markerLatlng); };
+                div.appendChild(btnCaminar);
+
             } else {
                 div.innerHTML += `<p style="font-size:11px; color:#888;">No hay rutas registradas a menos de 1km.</p>`;
             }

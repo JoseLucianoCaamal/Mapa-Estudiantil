@@ -13,3 +13,36 @@ body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; }
 .pin-academico { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 50%; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 .pin-uni { background-color: #1a5276; color: white; }
 .pin-prepa { background-color: #27ae60; color: white; }
+
+/* --- MODO OSCURO --- */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode .controles-mapa {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    color: white;
+}
+
+body.dark-mode input {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+}
+
+/* El filtro mágico que invierte los colores del mapa para hacerlo oscuro */
+body.dark-mode .leaflet-layer,
+body.dark-mode .leaflet-control-zoom-in,
+body.dark-mode .leaflet-control-zoom-out,
+body.dark-mode .leaflet-control-attribution {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+/* Oscurecer los cuadritos blancos (Popups) */
+body.dark-mode .leaflet-popup-content-wrapper,
+body.dark-mode .leaflet-popup-tip {
+    background-color: #2c2c2c;
+    color: #fff;
+}
