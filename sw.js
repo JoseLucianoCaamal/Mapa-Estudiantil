@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mapa-estudiantil-v19.1'; 
+const CACHE_NAME = 'mapa-estudiantil-v19.2'; 
 
 const urlsToCache = [
   './',
@@ -41,13 +41,19 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// 3. INTERCEPTOR DE RED
+// 3. INTERCEPTOR DE RED (Estrategia "Network First")
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then(response => {
-        // Devuelve la versión en caché si existe, si no, va a internet
-        return response || fetch(event.request);
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request);
       })
   );
 });

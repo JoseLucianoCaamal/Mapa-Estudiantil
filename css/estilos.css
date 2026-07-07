@@ -235,3 +235,21 @@ body.dark-mode .spinner {
 input:checked + .slider { background-color: #004a99; }
 input:checked + .slider:before { transform: translateX(20px); }
 .contenedor-filtros { display: flex; gap: 15px; padding: 10px; background: white; z-index: 1000; position: relative; }
+
+.contenedor-filtros { 
+    display: flex; 
+    flex-wrap: wrap; /* Permite que si no caben, bajen a otra línea */
+    gap: 15px; 
+    padding: 10px; 
+    background: transparent; /* Mejoramos la estética con el panel principal */
+    z-index: 1000; 
+    position: relative; 
+}
+
+/* Modificamos tu media query de celulares para que apile los filtros de forma ordenada */
+@media screen and (max-width: 768px) {
+    .contenedor-filtros {
+        flex-direction: column; /* Apila los switches en el celular */
+        gap: 8px;
+    }
+}
