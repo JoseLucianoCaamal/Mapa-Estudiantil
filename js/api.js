@@ -77,9 +77,9 @@ export async function cargarEscuelas(mapa) {
             let opcionesIcono = {
                 icon: L.icon({
                     iconUrl: './Img/Birretes.png', 
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 32],
-                    popupAnchor: [0, -32]
+                    iconSize: [48, 48],      
+                    iconAnchor: [24, 48],    
+                    popupAnchor: [0, -48]
                 })
             };
             
