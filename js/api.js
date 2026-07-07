@@ -4,7 +4,7 @@ export async function cargarEscuelas(mapa) {
     const cargandoDiv = document.getElementById('cargando');
     cargandoDiv.style.display = 'block';
 
-    // 1. Coordenadas reales exactas (Carretera Mérida-Tetiz Km 4.5, Zona Ucú/Caucel)
+    // 1. Coordenadas reales exactas
     const manuales = [
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355 },
         { nombre: "Universidad Politécnica de Yucatán (UPY)", lat: 20.9886, lon: -89.7375 }
@@ -45,19 +45,40 @@ export async function cargarEscuelas(mapa) {
     
     const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
 
-    try {
-        const response = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(query) });
-        const data = await response.json();
-        cargandoDiv.style.display = 'none';
+    // --- SISTEMA DE CACHÉ LOCALSTORAGE ---
+    const cacheKey = 'escuelasCache';
+    const cacheTime = 'escuelasTime';
+    const expiracion = 7 * 24 * 60 * 60 * 1000; // 7 días en milisegundos
+    const ahora = Date.now();
 
-        // Función procesar adaptada para el diseño de la Agencia
+    let data;
+    const guardado = localStorage.getItem(cacheKey);
+    const tiempo = localStorage.getItem(cacheTime);
+
+    try {
+        // ¿Hay datos válidos en caché?
+        if (guardado && tiempo && (ahora - parseInt(tiempo)) < expiracion) {
+            console.log("⚡ Cargando instituciones desde el caché local");
+            data = JSON.parse(guardado);
+            cargandoDiv.style.display = 'none';
+        } else {
+            console.log("🌐 Descargando instituciones de Overpass API...");
+            const response = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(query) });
+            data = await response.json();
+            
+            // Guardar en caché para la próxima visita
+            localStorage.setItem(cacheKey, JSON.stringify(data));
+            localStorage.setItem(cacheTime, ahora.toString());
+            cargandoDiv.style.display = 'none';
+        }
+
+        let circuloActual = null; // Variable para el círculo azul
+
         const procesar = (nombre, lat, lon, esAgencia = false) => {
             const markerLatlng = L.latLng(lat, lon);
             
-            // Ícono por defecto (Universidades/Prepas)
             let opcionesIcono = { icon: L.divIcon({ html: `<div class="pin-academico pin-uni">🎓</div>`, iconSize: [25, 25] }) };
             
-            // Si es la agencia, le ponemos el pin rojo tradicional de Leaflet
             if(esAgencia) {
                 opcionesIcono = {
                     icon: L.icon({
@@ -72,9 +93,21 @@ export async function cargarEscuelas(mapa) {
             }
 
             const marker = L.marker(markerLatlng, opcionesIcono).addTo(mapa);
+            
+            // --- DIBUJAR EL CÍRCULO AL HACER CLIC ---
+            marker.on('click', () => {
+                if (circuloActual) mapa.removeLayer(circuloActual);
+                
+                circuloActual = L.circle(markerLatlng, {
+                    color: '#3498db',
+                    fillColor: '#3498db',
+                    fillOpacity: 0.15,
+                    radius: 1000 // 1km
+                }).addTo(mapa);
+            });
+
             const div = document.createElement('div');
             
-            // HTML condicional: Requisitos si es agencia, solo título si es escuela
             if(esAgencia) {
                 div.innerHTML = `
                     <div style="min-width: 220px; font-family: sans-serif;">
@@ -93,7 +126,6 @@ export async function cargarEscuelas(mapa) {
                 div.innerHTML = `<h3>${nombre}</h3>`;
             }
 
-            // Obtenemos las rutas de tu GeoJSON que pasan a menos de 1km
             const rutasCercanas = obtenerRutasCercanas(markerLatlng);
             
             if (rutasCercanas.length > 0) {
@@ -120,7 +152,7 @@ export async function cargarEscuelas(mapa) {
             listaMarcadores.push({ nombre, marker });
         };
 
-        // Filtrado de instituciones (Permite Universidades y Prepas, bloquea educación básica)
+        // Filtrado
         data.elements.forEach(el => {
             const nombre = el.tags.name || "";
             const esSuperior = /universidad|facultad|instituto tecn|anahuac|marista|enes|uady|politécnica|humanitas|prepa|bachiller|colegio/i.test(nombre);
@@ -132,8 +164,6 @@ export async function cargarEscuelas(mapa) {
         });
 
         manuales.forEach(m => procesar(m.nombre, m.lat, m.lon));
-
-        // Añadir Agencia de Transporte de Yucatán (Se manda el valor 'true' al final para activar el diseño especial)
         procesar("Agencia de Transporte de Yucatán", 20.9753, -89.6268, true);
 
     } catch (err) {
