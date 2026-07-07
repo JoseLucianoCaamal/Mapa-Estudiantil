@@ -41,7 +41,8 @@ export async function cargarEscuelas(mapa) {
         }
         return cercanas;
     };
-
+    window.obtenerRutasGlobal = obtenerRutasCercanas;
+    
     const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
 
     try {
