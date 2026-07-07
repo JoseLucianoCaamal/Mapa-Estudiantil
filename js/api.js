@@ -25,7 +25,7 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Centro de Estudios Superiores del Sureste", lat: 20.9805, lon: -89.6270 },
         { nombre: "República de México", lat: 20.9860, lon: -89.6290 },
         { nombre: "Centro Universitario Felipe Carrillo Puerto", lat: 20.9840, lon: -89.6300 },
-        { nombre: "Instituto Universitario del Sureste (IUNIS)", lat: 20.9875, lon: -89.6310 },
+        { nombre: "Instituto Universitario del Sureste (IUNIS)", lat: 20.954296, lon: -89.627881 },
         { nombre: "Universidad Privada de la Península (UPP)", lat: 20.9910, lon: -89.6350 },
         { nombre: "Facultad de Psicología, UADY", lat: 20.9855, lon: -89.6185 },
         { nombre: "Facultad de Educación, UADY", lat: 20.9845, lon: -89.6195 },
