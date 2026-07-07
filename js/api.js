@@ -40,7 +40,12 @@ export async function cargarEscuelas(mapa) {
 
     // 2. Lógica de Rutas
     const rutasDisponibles = [
-        '72', '92', 'Periferico', '64_Castilla_Camara', '1_Emiliano_Zapata_2_Paso_Texas', '2_Periferico_Roble_San_Marcos'
+        '72', 
+        '92', 
+        'Periferico', 
+        '64_Castilla_Camara', 
+        '1_Emiliano_Zapata_2_Paso_Texas', 
+        '2_Periferico_Roble_San_Marcos'
     ];
     const puntosPorRuta = {}; 
 
@@ -67,13 +72,22 @@ export async function cargarEscuelas(mapa) {
     };
     window.obtenerRutasGlobal = obtenerRutasCercanas;
 
-    // 3. Procesamiento (Estilo Birrete + Botones bonitos)
+    // 3. Procesamiento (Con Iconos Diferentes)
     const procesar = (nombre, lat, lon, categoria) => {
         const markerLatlng = L.latLng(parseFloat(lat), parseFloat(lon));
         
+        // Asignamos la imagen dependiendo de la categoría
+        let urlIcono = './Img/Birretes.png'; // Por defecto universidades
+
+        if (categoria === 'salud') {
+            urlIcono = './Img/Salud.png';
+        } else if (categoria === 'super') {
+            urlIcono = './Img/Compra.png';
+        }
+
         const icono = L.icon({
-            iconUrl: './Img/Birretes.png',
-            iconSize: [48, 48],
+            iconUrl: urlIcono,
+            iconSize: [48, 48],   // Puedes ajustar este tamaño si quieres que los super sean más pequeños
             iconAnchor: [24, 24],
             popupAnchor: [0, -24]
         });
