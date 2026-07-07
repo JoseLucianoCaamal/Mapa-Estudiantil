@@ -27,7 +27,6 @@ export async function cargarEscuelas(mapa) {
         }
     }
 
-    // Función que devuelve un arreglo con los nombres de las rutas que pasan cerca
     const obtenerRutasCercanas = (latlng) => {
         const cercanas = [];
         for (let ruta in puntosPorRuta) {
@@ -48,7 +47,7 @@ export async function cargarEscuelas(mapa) {
     // --- SISTEMA DE CACHÉ LOCALSTORAGE ---
     const cacheKey = 'escuelasCache';
     const cacheTime = 'escuelasTime';
-    const expiracion = 7 * 24 * 60 * 60 * 1000; // 7 días en milisegundos
+    const expiracion = 7 * 24 * 60 * 60 * 1000; 
     const ahora = Date.now();
 
     let data;
@@ -56,7 +55,6 @@ export async function cargarEscuelas(mapa) {
     const tiempo = localStorage.getItem(cacheTime);
 
     try {
-        // ¿Hay datos válidos en caché?
         if (guardado && tiempo && (ahora - parseInt(tiempo)) < expiracion) {
             console.log("⚡ Cargando instituciones desde el caché local");
             data = JSON.parse(guardado);
@@ -65,19 +63,25 @@ export async function cargarEscuelas(mapa) {
             console.log("🌐 Descargando instituciones de Overpass API...");
             const response = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(query) });
             data = await response.json();
-            
-            // Guardar en caché para la próxima visita
             localStorage.setItem(cacheKey, JSON.stringify(data));
             localStorage.setItem(cacheTime, ahora.toString());
             cargandoDiv.style.display = 'none';
         }
 
-        let circuloActual = null; // Variable para el círculo azul
+        let circuloActual = null; 
 
         const procesar = (nombre, lat, lon, esAgencia = false) => {
             const markerLatlng = L.latLng(lat, lon);
             
-            let opcionesIcono = { icon: L.divIcon({ html: `<div class="pin-academico pin-uni">🎓</div>`, iconSize: [25, 25] }) };
+            // --- AQUÍ USAMOS TU ICONO PERSONALIZADO ---
+            let opcionesIcono = {
+                icon: L.icon({
+                    iconUrl: './Img/Birretes.png', 
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32],
+                    popupAnchor: [0, -32]
+                })
+            };
             
             if(esAgencia) {
                 opcionesIcono = {
@@ -94,15 +98,13 @@ export async function cargarEscuelas(mapa) {
 
             const marker = L.marker(markerLatlng, opcionesIcono).addTo(mapa);
             
-            // --- DIBUJAR EL CÍRCULO AL HACER CLIC ---
             marker.on('click', () => {
                 if (circuloActual) mapa.removeLayer(circuloActual);
-                
                 circuloActual = L.circle(markerLatlng, {
                     color: '#3498db',
                     fillColor: '#3498db',
                     fillOpacity: 0.15,
-                    radius: 1000 // 1km
+                    radius: 1000 
                 }).addTo(mapa);
             });
 
@@ -112,13 +114,10 @@ export async function cargarEscuelas(mapa) {
                 div.innerHTML = `
                     <div style="min-width: 220px; font-family: sans-serif;">
                         <h3 style="margin-bottom: 5px; color: #004a99;">${nombre}</h3>
-                        <p style="margin-top: 0; font-size: 14px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                            Trámite de Credencial de Estudiante
-                        </p>
-                        <p style="font-size: 13px; margin-bottom: 5px;"><strong>Requisitos indispensables:</strong></p>
+                        <p style="font-size: 13px; margin-bottom: 5px;"><strong>Requisitos:</strong></p>
                         <ul style="font-size: 13px; margin-top: 0; padding-left: 20px;">
-                            <li>Constancia de estudios vigente</li>
-                            <li>Comprobante de domicilio</li>
+                            <li>Constancia vigente</li>
+                            <li>Comprobante domicilio</li>
                             <li>CURP</li>
                         </ul>
                     </div>`;
@@ -130,7 +129,6 @@ export async function cargarEscuelas(mapa) {
             
             if (rutasCercanas.length > 0) {
                 div.innerHTML += `<p style="font-size:12px; margin-bottom:5px;">Rutas a menos de 1km:</p>`;
-                
                 rutasCercanas.forEach(ruta => {
                     const btnVer = document.createElement('button');
                     btnVer.innerText = `Ver Ruta ${ruta}`;
@@ -145,13 +143,11 @@ export async function cargarEscuelas(mapa) {
                 btnOcultar.onclick = () => { if (window.limpiarRuta) window.limpiarRuta(); };
                 div.appendChild(btnOcultar);
                 
-                // --- NUEVO: BOTÓN PARA CAMINAR HASTA LA ESCUELA ---
                 const btnCaminar = document.createElement('button');
                 btnCaminar.innerText = "🚶 Caminar hasta aquí";
                 btnCaminar.style.cssText = "width:100%; padding:8px; background:#8e44ad; color:white; border:none; cursor:pointer; border-radius: 4px; margin-top: 5px;";
                 btnCaminar.onclick = () => { if (window.trazarRutaPeatonal) window.trazarRutaPeatonal(markerLatlng); };
                 div.appendChild(btnCaminar);
-
             } else {
                 div.innerHTML += `<p style="font-size:11px; color:#888;">No hay rutas registradas a menos de 1km.</p>`;
             }
@@ -160,12 +156,10 @@ export async function cargarEscuelas(mapa) {
             listaMarcadores.push({ nombre, marker });
         };
 
-        // Filtrado
         data.elements.forEach(el => {
             const nombre = el.tags.name || "";
             const esSuperior = /universidad|facultad|instituto tecn|anahuac|marista|enes|uady|politécnica|humanitas|prepa|bachiller|colegio/i.test(nombre);
             const esBasica = /primaria|secundaria|kinder|jardin|preescolar|telesecundaria/i.test(nombre);
-
             if (esSuperior && !esBasica) {
                 procesar(nombre, el.lat || el.center.lat, el.lon || el.center.lon);
             }
