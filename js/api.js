@@ -39,7 +39,7 @@ export async function cargarEscuelas(mapa) {
 
     // --- LÓGICA DE RUTAS ---
     localStorage.removeItem('escuelasCache'); 
-    const rutasDisponibles = ['72', 'Periferico', '92', '116'];
+    const rutasDisponibles = ['72', 'Periferico', '92', '64_Castilla_Camara'];
     const puntosPorRuta = {}; 
 
     for (let nombreRuta of rutasDisponibles) {
