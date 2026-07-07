@@ -5,7 +5,7 @@ const coloresRutas = {
     '72': '#e74c3c',        // Rojo
     'Periferico': '#2ecc71',// Verde
     '92': '#9b59b6',        // Morado
-    '116 (64 - Castilla Camara)': 'hsl(236, 73%, 50%)'   
+    '116': 'hsl(236, 73%, 50%)'   
 };
 
 export function inicializarRutas(mapa) {
