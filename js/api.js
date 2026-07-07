@@ -4,7 +4,7 @@ export async function cargarEscuelas(mapa) {
     const cargandoDiv = document.getElementById('cargando');
     cargandoDiv.style.display = 'block';
 
-    let circuloActual = null; // <-- Aquí guardamos el círculo para borrar el anterior
+    let circuloActual = null; 
 
     // 1. Coordenadas Manuales
     const puntosManuales = [
@@ -37,7 +37,16 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Preparatoria Uno UADY", lat: 20.978358, lon: -89.600616, cat: 'uni' },
         { nombre: "Preparatoria Dos UADY", lat: 20.981401, lon: -89.655902, cat: 'uni' },
         { nombre: "Chedraui Norte", lat: 21.0345, lon: -89.6123, cat: 'super' },
-        { nombre: "Farmacia del Ahorro Centro", lat: 20.9750, lon: -89.6250, cat: 'salud' }
+        { nombre: "Farmacia del Ahorro Centro", lat: 20.9750, lon: -89.6250, cat: 'salud' },
+        
+        // --- AQUÍ ESTÁ LA NUEVA AGENCIA VA Y VEN ---
+        { 
+            nombre: "Agencia de Transporte de Yucatán (Va y Ven)", 
+            lat: 20.981045, 
+            lon: -89.625853, 
+            cat: 'agencia',
+            req: "<b>Requisitos para credencial de estudiante:</b><br>• Constancia de estudios vigente<br>• Comprobante de Domicilio<br>• CURP"
+        }
     ];
 
     // 2. Lógica de Rutas
@@ -69,13 +78,14 @@ export async function cargarEscuelas(mapa) {
     };
     window.obtenerRutasGlobal = obtenerRutasCercanas;
 
-    // 3. Procesamiento
-    const procesar = (nombre, lat, lon, categoria) => {
+    // 3. Procesamiento (Ahora recibe los "requisitos" como un parámetro extra)
+    const procesar = (nombre, lat, lon, categoria, requisitos = '') => {
         const markerLatlng = L.latLng(parseFloat(lat), parseFloat(lon));
         
         let urlIcono = './Img/Birretes.png';
         if (categoria === 'salud') urlIcono = './Img/Salud.png';
         else if (categoria === 'super') urlIcono = './Img/Compra.png';
+        else if (categoria === 'agencia') urlIcono = './Img/va.png'; // <-- Icono del Va y Ven
 
         const icono = L.icon({
             iconUrl: urlIcono,
@@ -87,7 +97,6 @@ export async function cargarEscuelas(mapa) {
         const marker = L.marker(markerLatlng, { icon: icono }).addTo(mapa);
         marker.categoria = categoria; 
 
-        // --- RESTAURAMOS EL CÍRCULO AZUL AL HACER CLIC ---
         marker.on('click', () => {
             if (circuloActual) mapa.removeLayer(circuloActual);
             circuloActual = L.circle(markerLatlng, { 
@@ -99,6 +108,11 @@ export async function cargarEscuelas(mapa) {
 
         const div = document.createElement('div');
         div.innerHTML = `<h3>${nombre}</h3>`;
+        
+        // --- AQUÍ AGREGAMOS LA CAJITA CON LOS REQUISITOS SI EXISTEN ---
+        if (requisitos) {
+            div.innerHTML += `<div style="background: #eef2f5; border-left: 4px solid #004a99; padding: 10px; margin-bottom: 10px; font-size: 13px; border-radius: 4px;">${requisitos}</div>`;
+        }
         
         const rutasCercanas = obtenerRutasCercanas(markerLatlng);
         if (rutasCercanas.length > 0) {
@@ -112,7 +126,6 @@ export async function cargarEscuelas(mapa) {
             });
         }
 
-        // --- RESTAURAMOS EL BOTÓN DE CAMINAR ---
         const btnCaminar = document.createElement('button');
         btnCaminar.innerText = "🚶 Caminar hasta aquí";
         btnCaminar.style.cssText = "width:100%; padding:8px; background:#8e44ad; color:white; border:none; margin-top:5px; border-radius:4px;";
@@ -132,7 +145,8 @@ export async function cargarEscuelas(mapa) {
         const data = await response.json();
         
         data.elements.forEach(el => procesar(el.tags.name || "Facultad", el.lat || el.center.lat, el.lon || el.center.lon, 'uni'));
-        puntosManuales.forEach(m => procesar(m.nombre, m.lat, m.lon, m.cat));
+        // Pasamos "m.req" a la función procesar para que lea los requisitos
+        puntosManuales.forEach(m => procesar(m.nombre, m.lat, m.lon, m.cat, m.req));
         
         cargandoDiv.style.display = 'none';
     } catch (err) { 
