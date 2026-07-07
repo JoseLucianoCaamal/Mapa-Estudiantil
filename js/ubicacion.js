@@ -6,13 +6,12 @@ export function activarGeolocalizacion(mapa) {
     }
 
     let marcadorUsuario = null;
+    let circuloUbicacion = null; // Variable para el círculo verde
 
     btn.addEventListener('click', () => {
         console.log("📍 Solicitando ubicación al navegador...");
-        // Cambiamos el texto del botón para que sepas que sí le diste clic
         btn.innerText = "⏳ Buscando..."; 
         
-        // Pedimos la ubicación con alta precisión y un límite de tiempo de 10 segundos
         mapa.locate({
             setView: true, 
             maxZoom: 15, 
@@ -21,14 +20,24 @@ export function activarGeolocalizacion(mapa) {
         });
     });
 
-    // ÉXITO: El navegador encontró tu ubicación
+    // ÉXITO
     mapa.on('locationfound', (e) => {
         console.log("✅ Ubicación encontrada:", e.latlng);
-        btn.innerText = "📍 ¿Dónde estoy?"; // Restaurar el botón
+        btn.innerText = "📍 ¿Dónde estoy?"; 
 
         if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
+        if (circuloUbicacion) mapa.removeLayer(circuloUbicacion); // Borrar círculo viejo si se mueve
         
         marcadorUsuario = L.marker(e.latlng).addTo(mapa);
+        
+        // --- DIBUJAR CÍRCULO VERDE DE 1KM ---
+        circuloUbicacion = L.circle(e.latlng, {
+            color: '#27ae60',
+            fillColor: '#27ae60',
+            fillOpacity: 0.15,
+            radius: 1000 // 1km
+        }).addTo(mapa);
+
         let div = document.createElement('div');
         div.innerHTML = `<h3 style="color: #27ae60; margin-bottom: 5px;">📍 Tu ubicación actual</h3>`;
 
@@ -61,12 +70,11 @@ export function activarGeolocalizacion(mapa) {
         marcadorUsuario.bindPopup(div).openPopup();
     });
 
-    // ERROR: El navegador rechazó el permiso o no tiene GPS
+    // ERROR
     mapa.on('locationerror', (e) => {
         console.error("❌ Error de geolocalización:", e.message);
-        btn.innerText = "📍 ¿Dónde estoy?"; // Restaurar el botón
+        btn.innerText = "📍 ¿Dónde estoy?"; 
         
-        // Le mostramos al usuario exactamente qué falló
         alert(`No pudimos encontrar tu ubicación.\nMotivo: ${e.message}\n\nPor favor, verifica que tienes el GPS encendido y que le diste permisos a esta página en el ícono del candado junto a la URL.`);
     });
 }
