@@ -4,7 +4,7 @@ export async function cargarEscuelas(mapa) {
     const cargandoDiv = document.getElementById('cargando');
     cargandoDiv.style.display = 'block';
 
-    // 1. Todas tus coordenadas manuales aquí (Universidades + Supers + Salud)
+    // 1. Coordenadas Manuales
     const puntosManuales = [
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355, cat: 'uni' },
         { nombre: "Universidad Modelo", lat: 21.02719, lon: -89.56716, cat: 'uni' },
@@ -50,7 +50,7 @@ export async function cargarEscuelas(mapa) {
                               '64_Castilla_Camara',
                               '1_Emiliano_Zapata_2_Paso_Texas',
                               '2_Periferico_Roble_San_Marcos'];
-    const puntosPorRuta = {}; 
+    const puntosPorRuta = {};; 
 
     for (let nombreRuta of rutasDisponibles) {
         try {
@@ -75,50 +75,61 @@ export async function cargarEscuelas(mapa) {
     };
     window.obtenerRutasGlobal = obtenerRutasCercanas;
 
-    // 3. Procesamiento y API
-    const procesar = (nombre, lat, lon, categoria) => {
+    // 3. Procesamiento (Estilo Birrete + Botones bonitos)
+    const procesar = (nombre, lat, lon, categoria, esAgencia = false) => {
         const markerLatlng = L.latLng(parseFloat(lat), parseFloat(lon));
-        const marker = L.marker(markerLatlng).addTo(mapa);
-        marker.categoria = categoria;
+        
+        // Icono Birrete
+        const icono = L.icon({
+            iconUrl: './Img/Birretes.png',
+            iconSize: [48, 48],
+            iconAnchor: [24, 24],
+            popupAnchor: [0, -24]
+        });
 
+        const marker = L.marker(markerLatlng, { icon: icono }).addTo(mapa);
+        marker.categoria = categoria; 
+
+        // Popup estilizado
         const div = document.createElement('div');
         div.innerHTML = `<h3>${nombre}</h3>`;
-        const rutasCercanas = obtenerRutasCercanas(markerLatlng);
         
-        rutasCercanas.forEach(ruta => {
-            const btn = document.createElement('button');
-            btn.innerText = `Ver ${ruta}`;
-            btn.onclick = () => window.dibujarRuta(ruta);
-            div.appendChild(btn);
-        });
+        const rutasCercanas = obtenerRutasCercanas(markerLatlng);
+        if (rutasCercanas.length > 0) {
+            div.innerHTML += `<p>Rutas a menos de 1km:</p>`;
+            rutasCercanas.forEach(ruta => {
+                const btn = document.createElement('button');
+                btn.innerText = `Ver Ruta ${ruta}`;
+                btn.style.cssText = "width:100%; padding:8px; background:#e67e22; color:white; border:none; margin-bottom:5px; border-radius:4px;";
+                btn.onclick = () => window.dibujarRuta(ruta);
+                div.appendChild(btn);
+            });
+        }
         marker.bindPopup(div);
-        listaMarcadores.push({ marker, categoria });
+        listaMarcadores.push({ marker, categoria, nombre }); // Guardamos nombre para el buscador
     };
 
+    // 4. Carga Final (API + Manuales)
     try {
-        // Cargar API
         const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
         const response = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(query) });
         const data = await response.json();
+        
         data.elements.forEach(el => procesar(el.tags.name || "Facultad", el.lat || el.center.lat, el.lon || el.center.lon, 'uni'));
+        manuales.forEach(m => procesar(m.nombre, m.lat, m.lon, m.cat));
+        
+        cargandoDiv.style.display = 'none';
+    } catch (err) { cargandoDiv.style.display = 'none'; }
 
-        // Cargar Manuales
-        puntosManuales.forEach(p => procesar(p.nombre, p.lat, p.lon, p.cat));
-
-        // Filtros (funcionales)
-        document.querySelectorAll('#filtros input').forEach(input => {
-            input.addEventListener('change', (e) => {
-                const cat = e.target.id.replace('check-', '');
-                listaMarcadores.forEach(m => {
-                    if (m.categoria === cat) {
-                        e.target.checked ? m.marker.addTo(mapa) : mapa.removeLayer(m.marker);
-                    }
-                });
+    // 5. Filtros (Switches)
+    document.querySelectorAll('#filtros input').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const cat = e.target.id.replace('check-', '');
+            listaMarcadores.forEach(m => {
+                if (m.categoria === cat) {
+                    e.target.checked ? m.marker.addTo(mapa) : mapa.removeLayer(m.marker);
+                }
             });
         });
-        cargandoDiv.style.display = 'none';
-    } catch (err) {
-        console.error(err);
-        cargandoDiv.style.display = 'none';
-    }
+    });
 }
