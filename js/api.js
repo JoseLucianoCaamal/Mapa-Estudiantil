@@ -4,6 +4,8 @@ export async function cargarEscuelas(mapa) {
     const cargandoDiv = document.getElementById('cargando');
     cargandoDiv.style.display = 'block';
 
+    let circuloActual = null; // <-- Aquí guardamos el círculo para borrar el anterior
+
     // 1. Coordenadas Manuales
     const puntosManuales = [
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355, cat: 'uni' },
@@ -40,12 +42,7 @@ export async function cargarEscuelas(mapa) {
 
     // 2. Lógica de Rutas
     const rutasDisponibles = [
-        '72', 
-        '92', 
-        'Periferico', 
-        '64_Castilla_Camara', 
-        '1_Emiliano_Zapata_2_Paso_Texas', 
-        '2_Periferico_Roble_San_Marcos'
+        '72', '92', 'Periferico', '64_Castilla_Camara', '1_Emiliano_Zapata_2_Paso_Texas', '2_Periferico_Roble_San_Marcos'
     ];
     const puntosPorRuta = {}; 
 
@@ -72,28 +69,33 @@ export async function cargarEscuelas(mapa) {
     };
     window.obtenerRutasGlobal = obtenerRutasCercanas;
 
-    // 3. Procesamiento (Con Iconos Diferentes)
+    // 3. Procesamiento
     const procesar = (nombre, lat, lon, categoria) => {
         const markerLatlng = L.latLng(parseFloat(lat), parseFloat(lon));
         
-        // Asignamos la imagen dependiendo de la categoría
-        let urlIcono = './Img/Birretes.png'; // Por defecto universidades
-
-        if (categoria === 'salud') {
-            urlIcono = './Img/Salud.png';
-        } else if (categoria === 'super') {
-            urlIcono = './Img/Compra.png';
-        }
+        let urlIcono = './Img/Birretes.png';
+        if (categoria === 'salud') urlIcono = './Img/Salud.png';
+        else if (categoria === 'super') urlIcono = './Img/Compra.png';
 
         const icono = L.icon({
             iconUrl: urlIcono,
-            iconSize: [32, 32],   
+            iconSize: [48, 48],
             iconAnchor: [24, 24],
             popupAnchor: [0, -24]
         });
 
         const marker = L.marker(markerLatlng, { icon: icono }).addTo(mapa);
         marker.categoria = categoria; 
+
+        // --- RESTAURAMOS EL CÍRCULO AZUL AL HACER CLIC ---
+        marker.on('click', () => {
+            if (circuloActual) mapa.removeLayer(circuloActual);
+            circuloActual = L.circle(markerLatlng, { 
+                radius: 1000, 
+                color: '#3498db', 
+                fillOpacity: 0.15 
+            }).addTo(mapa);
+        });
 
         const div = document.createElement('div');
         div.innerHTML = `<h3>${nombre}</h3>`;
@@ -109,11 +111,21 @@ export async function cargarEscuelas(mapa) {
                 div.appendChild(btn);
             });
         }
+
+        // --- RESTAURAMOS EL BOTÓN DE CAMINAR ---
+        const btnCaminar = document.createElement('button');
+        btnCaminar.innerText = "🚶 Caminar hasta aquí";
+        btnCaminar.style.cssText = "width:100%; padding:8px; background:#8e44ad; color:white; border:none; margin-top:5px; border-radius:4px;";
+        btnCaminar.onclick = () => { 
+            if (window.trazarRutaPeatonal) window.trazarRutaPeatonal(markerLatlng); 
+        };
+        div.appendChild(btnCaminar);
+
         marker.bindPopup(div);
         listaMarcadores.push({ marker, categoria, nombre });
     };
 
-    // 4. Carga Final (API + Manuales)
+    // 4. Carga Final
     try {
         const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
         const response = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(query) });
@@ -128,7 +140,7 @@ export async function cargarEscuelas(mapa) {
         cargandoDiv.style.display = 'none'; 
     }
 
-    // 5. Filtros (Switches)
+    // 5. Filtros
     document.querySelectorAll('#filtros input').forEach(input => {
         input.addEventListener('change', (e) => {
             const cat = e.target.id.replace('check-', '');
