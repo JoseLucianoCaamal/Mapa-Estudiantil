@@ -4,13 +4,13 @@ export async function cargarEscuelas(mapa) {
     const cargandoDiv = document.getElementById('cargando');
     cargandoDiv.style.display = 'block';
 
-    // 1. Coordenadas (Tu lista original, pero corregida)
+    // 1. Coordenadas (Lista completa y corregida)
     const manuales = [
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355 },
         { nombre: "Universidad Politécnica de Yucatán (UPY)", lat: 20.9886, lon: -89.7375 },
         { nombre: "Universidad Modelo", lat: 21.0042, lon: -89.6187 },
-        { nombre: "Facultad de Medicina UADY", lat: 20.973892, lon: -89.640166 },
-        { nombre: "Universidad Vizcaya de las Américas", lat: 20.9790, lon: -89.640101},
+        { nombre: "Facultad de Medicina UADY", lat: 20.9738, lon: -89.6278 },
+        { nombre: "Universidad Vizcaya de las Américas", lat: 20.9790, lon: -89.6401 },
         { nombre: "Universidad Santander Yucatán", lat: 21.0021, lon: -89.6055 },
         { nombre: "UHAB Península de Yucatán", lat: 20.9850, lon: -89.6380 },
         { nombre: "UTP CAMPUS MÉRIDA", lat: 20.9870, lon: -89.7360 },
@@ -31,7 +31,7 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Facultad de Educación, UADY", lat: 20.9845, lon: -89.6195 },
         { nombre: "Facultad de Contaduría y Administración, UADY", lat: 20.9835, lon: -89.6175 },
         { nombre: "Facultad de Derecho, UADY", lat: 20.9825, lon: -89.6165 },
-        { nombre: "Facultad de Odontología, UADY", lat: 20.973842, lon: -89.6140 },
+        { nombre: "Facultad de Odontología, UADY", lat: 20.9738, lon: -89.6140 },
         { nombre: "Facultad de Química, UADY", lat: 20.9780, lon: -89.6120 },
         { nombre: "Facultad de Enfermería, UADY", lat: 20.9770, lon: -89.6110 },
         { nombre: "Preparatoria Uno UADY", lat: 20.9850, lon: -89.6155 },
@@ -40,7 +40,7 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Cecytey 06 Emiliano Zapata", lat: 20.9620, lon: -89.6020 }
     ];
 
-    // --- SISTEMA MULTIRUTAS (Mantenemos tu lógica original) ---
+    // --- SISTEMA MULTIRUTAS ---
     const rutasDisponibles = ['72', 'Periferico', '92']; 
     const puntosPorRuta = {}; 
 
@@ -67,7 +67,7 @@ export async function cargarEscuelas(mapa) {
     };
     window.obtenerRutasGlobal = obtenerRutasCercanas;
     
-    // --- LÓGICA DE API (La original) ---
+    // --- LÓGICA DE API ---
     const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
 
     try {
@@ -80,21 +80,65 @@ export async function cargarEscuelas(mapa) {
         const procesar = (nombre, lat, lon, esAgencia = false) => {
             const markerLatlng = L.latLng(lat, lon);
             
-            const marker = L.marker(markerLatlng, {
+            let opcionesIcono = {
                 icon: L.icon({
                     iconUrl: './Img/Birretes.png',
                     iconSize: [48, 48],
                     iconAnchor: [24, 24],
                     popupAnchor: [0, -24]
                 })
-            }).addTo(mapa);
+            };
+
+            if(esAgencia) {
+                opcionesIcono = {
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                };
+            }
+
+            const marker = L.marker(markerLatlng, opcionesIcono).addTo(mapa);
             
             marker.on('click', () => {
                 if (circuloActual) mapa.removeLayer(circuloActual);
                 circuloActual = L.circle(markerLatlng, { radius: 1000, color: '#3498db', fillOpacity: 0.15 }).addTo(mapa);
             });
 
-            marker.bindPopup(`<h3>${nombre}</h3>`);
+            const div = document.createElement('div');
+            if(esAgencia) {
+                div.innerHTML = `<div style="min-width: 220px;"><h3>${nombre}</h3><p>Trámite de Credencial</p></div>`;
+            } else {
+                div.innerHTML = `<h3>${nombre}</h3>`;
+            }
+
+            const rutasCercanas = obtenerRutasCercanas(markerLatlng);
+            if (rutasCercanas.length > 0) {
+                div.innerHTML += `<p>Rutas a menos de 1km:</p>`;
+                rutasCercanas.forEach(ruta => {
+                    const btnVer = document.createElement('button');
+                    btnVer.innerText = `Ver Ruta ${ruta}`;
+                    btnVer.style.cssText = "width:100%; padding:8px; background:#e67e22; color:white; border:none; margin-bottom: 5px;";
+                    btnVer.onclick = () => { if (window.dibujarRuta) window.dibujarRuta(ruta); };
+                    div.appendChild(btnVer);
+                });
+                const btnOcultar = document.createElement('button');
+                btnOcultar.innerText = "Quitar Ruta";
+                btnOcultar.style.cssText = "width:100%; padding:8px; background:#e74c3c; color:white; border:none;";
+                btnOcultar.onclick = () => { if (window.limpiarRuta) window.limpiarRuta(); };
+                div.appendChild(btnOcultar);
+                const btnCaminar = document.createElement('button');
+                btnCaminar.innerText = "🚶 Caminar hasta aquí";
+                btnCaminar.style.cssText = "width:100%; padding:8px; background:#8e44ad; color:white; border:none; margin-top:5px;";
+                btnCaminar.onclick = () => { if (window.trazarRutaPeatonal) window.trazarRutaPeatonal(markerLatlng); };
+                div.appendChild(btnCaminar);
+            }
+
+            marker.bindPopup(div);
             listaMarcadores.push({ nombre, marker });
         };
 
