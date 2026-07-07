@@ -6,19 +6,20 @@
     <title>Mapa Estudiantil - Mérida</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-    
-    <link rel="stylesheet" href="css/estilos.css?v=2.0" />
+    <link rel="stylesheet" href="css/estilos.css?v=3.0" />
 </head>
 <body>
     <div class="controles-mapa">
-        <h2>Mapa Estudiantil</h2>
-        <input type="text" id="buscador" placeholder="🔍 Buscar escuela...">
+        <h2 class="titulo-mapa">🎓 Mapa Estudiantil</h2>
         
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button id="btn-ubicacion" style="flex: 1;">📍 ¿Dónde estoy?</button>
-            <button id="btn-tema" style="flex: 1;">🌙 Oscuro</button>
+        <div class="input-grupo">
+            <input type="text" id="buscador" placeholder="🔍 Buscar facultad o escuela...">
+        </div>
+        
+        <div class="botones-grupo">
+            <button id="btn-ubicacion" class="btn-primario">📍 ¿Dónde estoy?</button>
+            <button id="btn-tema" class="btn-secundario">🌙 Oscuro</button>
         </div>
     </div>
 
@@ -26,9 +27,7 @@
     <div id="mapa-merida"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-    
-    <script type="module" src="js/main.js?v=2.0"></script>
+    <script type="module" src="js/main.js?v=3.0"></script>
 </body>
 </html>
