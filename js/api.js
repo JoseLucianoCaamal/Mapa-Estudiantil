@@ -116,7 +116,7 @@ export async function cargarEscuelas(mapa) {
         const data = await response.json();
         
         data.elements.forEach(el => procesar(el.tags.name || "Facultad", el.lat || el.center.lat, el.lon || el.center.lon, 'uni'));
-        manuales.forEach(m => procesar(m.nombre, m.lat, m.lon, m.cat));
+        puntosManuales.forEach(m => procesar(m.nombre, m.lat, m.lon, m.cat));
         
         cargandoDiv.style.display = 'none';
     } catch (err) { cargandoDiv.style.display = 'none'; }
