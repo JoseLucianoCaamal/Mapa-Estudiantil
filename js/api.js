@@ -4,7 +4,7 @@ export async function cargarEscuelas(mapa) {
     const cargandoDiv = document.getElementById('cargando');
     cargandoDiv.style.display = 'block';
 
-    // Lista corregida con coordenadas precisas para Mérida
+    // 1. Coordenadas (Tu lista original, pero corregida)
     const manuales = [
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355 },
         { nombre: "Universidad Politécnica de Yucatán (UPY)", lat: 20.9886, lon: -89.7375 },
@@ -40,7 +40,7 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Cecytey 06 Emiliano Zapata", lat: 20.9620, lon: -89.6020 }
     ];
 
-    // --- LÓGICA DE RUTAS ---
+    // --- SISTEMA MULTIRUTAS (Mantenemos tu lógica original) ---
     const rutasDisponibles = ['72', 'Periferico', '92']; 
     const puntosPorRuta = {}; 
 
@@ -52,7 +52,7 @@ export async function cargarEscuelas(mapa) {
             if (featureLinea) {
                 puntosPorRuta[nombreRuta] = featureLinea.geometry.coordinates.map(coord => L.latLng(coord[1], coord[0]));
             }
-        } catch (e) { console.warn(`Error cargando ruta ${nombreRuta}`); }
+        } catch (e) { console.warn(`No se encontró la ruta ${nombreRuta}`); }
     }
 
     const obtenerRutasCercanas = (latlng) => {
@@ -66,10 +66,11 @@ export async function cargarEscuelas(mapa) {
         return cercanas;
     };
     window.obtenerRutasGlobal = obtenerRutasCercanas;
+    
+    // --- LÓGICA DE API (La original) ---
+    const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
 
-    // --- CARGA Y PROCESAMIENTO ---
     try {
-        const query = `[out:json][timeout:25];(node["amenity"~"university|college"](20.80,-89.80,21.15,-89.50);way["amenity"~"university|college"](20.80,-89.80,21.15,-89.50););out center;`;
         const response = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(query) });
         const data = await response.json();
         cargandoDiv.style.display = 'none';
@@ -77,9 +78,8 @@ export async function cargarEscuelas(mapa) {
         let circuloActual = null;
 
         const procesar = (nombre, lat, lon, esAgencia = false) => {
-            // FORZAMOS L.latLng con el orden correcto: (lat, lon)
-            const markerLatlng = L.latLng(parseFloat(lat), parseFloat(lon));
-
+            const markerLatlng = L.latLng(lat, lon);
+            
             const marker = L.marker(markerLatlng, {
                 icon: L.icon({
                     iconUrl: './Img/Birretes.png',
@@ -94,23 +94,21 @@ export async function cargarEscuelas(mapa) {
                 circuloActual = L.circle(markerLatlng, { radius: 1000, color: '#3498db', fillOpacity: 0.15 }).addTo(mapa);
             });
 
-            // Popup básico
             marker.bindPopup(`<h3>${nombre}</h3>`);
             listaMarcadores.push({ nombre, marker });
         };
 
-        // Procesar API
         data.elements.forEach(el => {
             const lat = el.lat || el.center.lat;
             const lon = el.lon || el.center.lon;
             procesar(el.tags.name || "Sin nombre", lat, lon);
         });
 
-        // Procesar Manuales
         manuales.forEach(m => procesar(m.nombre, m.lat, m.lon));
+        procesar("Agencia de Transporte de Yucatán", 20.9753, -89.6268, true);
 
     } catch (err) {
-        console.error("Error crítico:", err);
+        console.error("Error al cargar:", err);
         cargandoDiv.style.display = 'none';
     }
 }
