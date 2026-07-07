@@ -8,7 +8,6 @@ export async function cargarEscuelas(mapa) {
     const puntosManuales = [
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355, cat: 'uni' },
         { nombre: "Universidad Modelo", lat: 21.02719, lon: -89.56716, cat: 'uni' },
-        { nombre: "Universidad Modelo", lat: 21.02719, lon: -89.56716 , cat: 'uni' },
         { nombre: "Facultad de Medicina UADY", lat: 20.973857, lon: -89.640133, cat: 'uni' },
         { nombre: "Universidad Vizcaya de las Américas", lat: 21.004016, lon: -89.632835, cat: 'uni' },
         { nombre: "Universidad Santander Yucatán", lat: 20.999531, lon: -89.608566, cat: 'uni' },
@@ -35,22 +34,15 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Facultad de Enfermería, UADY", lat: 20.974859, lon: -89.643406, cat: 'uni' },
         { nombre: "Preparatoria Uno UADY", lat: 20.978358, lon: -89.600616, cat: 'uni' },
         { nombre: "Preparatoria Dos UADY", lat: 20.981401, lon: -89.655902, cat: 'uni' },
-
-        
         { nombre: "Chedraui Norte", lat: 21.0345, lon: -89.6123, cat: 'super' },
-        
         { nombre: "Farmacia del Ahorro Centro", lat: 20.9750, lon: -89.6250, cat: 'salud' }
-        // ... (Agrega todos tus puntos aquí siguiendo este formato)
     ];
 
     // 2. Lógica de Rutas
-    const rutasDisponibles = ['72',
-                              '92',
-                              'Periferico',
-                              '64_Castilla_Camara',
-                              '1_Emiliano_Zapata_2_Paso_Texas',
-                              '2_Periferico_Roble_San_Marcos'];
-    const puntosPorRuta = {};; 
+    const rutasDisponibles = [
+        '72', '92', 'Periferico', '64_Castilla_Camara', '1_Emiliano_Zapata_2_Paso_Texas', '2_Periferico_Roble_San_Marcos'
+    ];
+    const puntosPorRuta = {}; 
 
     for (let nombreRuta of rutasDisponibles) {
         try {
@@ -76,10 +68,9 @@ export async function cargarEscuelas(mapa) {
     window.obtenerRutasGlobal = obtenerRutasCercanas;
 
     // 3. Procesamiento (Estilo Birrete + Botones bonitos)
-    const procesar = (nombre, lat, lon, categoria, esAgencia = false) => {
+    const procesar = (nombre, lat, lon, categoria) => {
         const markerLatlng = L.latLng(parseFloat(lat), parseFloat(lon));
         
-        // Icono Birrete
         const icono = L.icon({
             iconUrl: './Img/Birretes.png',
             iconSize: [48, 48],
@@ -90,7 +81,6 @@ export async function cargarEscuelas(mapa) {
         const marker = L.marker(markerLatlng, { icon: icono }).addTo(mapa);
         marker.categoria = categoria; 
 
-        // Popup estilizado
         const div = document.createElement('div');
         div.innerHTML = `<h3>${nombre}</h3>`;
         
@@ -106,7 +96,7 @@ export async function cargarEscuelas(mapa) {
             });
         }
         marker.bindPopup(div);
-        listaMarcadores.push({ marker, categoria, nombre }); // Guardamos nombre para el buscador
+        listaMarcadores.push({ marker, categoria, nombre });
     };
 
     // 4. Carga Final (API + Manuales)
@@ -119,7 +109,10 @@ export async function cargarEscuelas(mapa) {
         puntosManuales.forEach(m => procesar(m.nombre, m.lat, m.lon, m.cat));
         
         cargandoDiv.style.display = 'none';
-    } catch (err) { cargandoDiv.style.display = 'none'; }
+    } catch (err) { 
+        console.error("Error al cargar datos:", err);
+        cargandoDiv.style.display = 'none'; 
+    }
 
     // 5. Filtros (Switches)
     document.querySelectorAll('#filtros input').forEach(input => {
