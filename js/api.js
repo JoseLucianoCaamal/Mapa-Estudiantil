@@ -8,7 +8,7 @@ export async function cargarEscuelas(mapa) {
     const manuales = [
         { nombre: "ENES UNAM Mérida", lat: 20.9883, lon: -89.7355 },
         { nombre: "Universidad Politécnica de Yucatán (UPY)", lat: 20.9886, lon: -89.7375 },
-        { nombre: "Universidad Modelo", lat: 21.0345, lon: -89.5878 },
+        { nombre: "Universidad Modelo", lat: 21.0042991, lon: -89.6187001 },
         { nombre: "Universidad Vizcaya de las Américas", lat: 20.9790, lon: -89.6235 },
         { nombre: "Universidad Santander Yucatán", lat: 21.0021, lon: -89.6055 },
         { nombre: "UHAB Península de Yucatán", lat: 20.9850, lon: -89.6380 },
@@ -31,7 +31,7 @@ export async function cargarEscuelas(mapa) {
         { nombre: "Facultad de Contaduría y Administración, UADY", lat: 20.9835, lon: -89.6175 },
         { nombre: "Facultad de Derecho, UADY", lat: 20.9825, lon: -89.6165 },
         { nombre: "Facultad de Odontología, UADY", lat: 20.9800, lon: -89.6140 },
-        { nombre: "Facultad de Medicina, UADY", lat: 20.9795, lon: -89.6135 },
+        { nombre: "Facultad de Medicina, UADY", lat: 20.983423, lon: -89.6362333 },
         { nombre: "Facultad de Química, UADY", lat: 20.9780, lon: -89.6120 },
         { nombre: "Facultad de Enfermería, UADY", lat: 20.9770, lon: -89.6110 },
         { nombre: "Preparatoria Uno UADY", lat: 20.9850, lon: -89.6155 },
