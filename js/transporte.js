@@ -1,24 +1,71 @@
+let capaRutaActual = null;
+
+// --- DICCIONARIO DE COLORES PARA LAS RUTAS ---
+const coloresRutas = {
+    '72': '#e74c3c',        // Rojo
+    'Periferico': '#2ecc71',// Verde
+    '92': '#9b59b6',        // Morado
+    'default': '#f39c12'    // Naranja por defecto si agregas más rutas luego
+};
+
 export function inicializarRutas(mapa) {
-    let capaRuta = null;
     
-    // Función para dibujar
-    window.dibujarRuta = (nombre) => {
-        if (capaRuta) mapa.removeLayer(capaRuta);
-        
-        fetch(`./rutas/${nombre}.geojson`)
-            .then(r => r.json())
-            .then(data => {
-                capaRuta = L.geoJSON(data, { style: { color: "#e67e22", weight: 6, opacity: 0.9 } }).addTo(mapa);
-                mapa.fitBounds(capaRuta.getBounds());
-            })
-            .catch(err => console.error("No se encontró el archivo de ruta.", err));
+    window.dibujarRuta = async (nombreRuta) => {
+        // Borramos la ruta anterior si existía
+        if (capaRutaActual) mapa.removeLayer(capaRutaActual);
+
+        try {
+            const res = await fetch(`./rutas/${nombreRuta}.geojson`);
+            const data = await res.json();
+
+            // Buscamos qué color le toca a esta ruta específica
+            const colorAsignado = coloresRutas[nombreRuta] || coloresRutas['default'];
+
+            capaRutaActual = L.geoJSON(data, {
+                style: {
+                    color: colorAsignado, // Asignamos su color único
+                    weight: 6,
+                    opacity: 0.8
+                }
+            }).addTo(mapa);
+
+            // --- NUEVO: CAMINAR HACIA EL PARADERO (Línea del camión) ---
+            capaRutaActual.on('click', (e) => {
+                const latlng = e.latlng; // Coordenada exacta donde el usuario tocó la línea
+                
+                // Creamos un mini panel (Popup)
+                const popupContent = document.createElement('div');
+                popupContent.innerHTML = `<p style="margin:0 0 5px 0; font-weight:bold; font-size:14px; color:${colorAsignado}">Camión: Ruta ${nombreRuta}</p>`;
+
+                const btnCaminarParadero = document.createElement('button');
+                btnCaminarParadero.innerText = "🚶 Caminar a este paradero";
+                btnCaminarParadero.style.cssText = `width:100%; padding:8px; background:${colorAsignado}; color:white; border:none; cursor:pointer; border-radius: 4px; font-weight:bold;`;
+                
+                // Al darle clic, traza la ruta desde el GPS del usuario hasta ese punto de la calle
+                btnCaminarParadero.onclick = () => {
+                    if (window.trazarRutaPeatonal) window.trazarRutaPeatonal(latlng);
+                    mapa.closePopup(); // Cierra el globito para que se vea la ruta
+                };
+
+                popupContent.appendChild(btnCaminarParadero);
+
+                // Mostramos el globito justo donde hizo clic
+                L.popup().setLatLng(latlng).setContent(popupContent).openOn(mapa);
+            });
+
+            // Hacemos zoom para que la ruta quepa en la pantalla
+            mapa.fitBounds(capaRutaActual.getBounds());
+            
+        } catch (error) {
+            console.error(`Error al cargar la ruta ${nombreRuta}:`, error);
+            alert(`No pudimos cargar la ruta ${nombreRuta}.`);
+        }
     };
 
-    // NUEVA FUNCIÓN: Para ocultar la ruta
     window.limpiarRuta = () => {
-        if (capaRuta) {
-            mapa.removeLayer(capaRuta); // Quita la línea del mapa
-            capaRuta = null; // Reinicia la variable
+        if (capaRutaActual) {
+            mapa.removeLayer(capaRutaActual);
+            capaRutaActual = null;
         }
     };
 }

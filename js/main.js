@@ -4,17 +4,52 @@ import { inicializarRutas } from './transporte.js';
 import { listaMarcadores } from './datos.js';
 import { activarGeolocalizacion } from './ubicacion.js'; 
 
-document.addEventListener('DOMContentLoaded', () => {
+// Agregamos 'async' aquí para poder esperar la carga de escuelas
+document.addEventListener('DOMContentLoaded', async () => {
     const mapa = inicializarMapa();
     
     inicializarRutas(mapa); 
-    cargarEscuelas(mapa);   
     activarGeolocalizacion(mapa);
     
-    // --- LÓGICA DEL BUSCADOR ---
+    // Esperamos pacientemente a que Overpass / Caché descargue las escuelas
+    await cargarEscuelas(mapa);   
+    
     const input = document.getElementById('buscador');
+
+    // --- NUEVO: DEEP LINKING (LEER ENLACE COMPARTIDO) ---
+    // Buscamos si en el enlace (URL) hay una variable que diga "?escuela=..."
+    const parametrosUrl = new URLSearchParams(window.location.search);
+    const escuelaBuscada = parametrosUrl.get('escuela');
+
+    if (escuelaBuscada) {
+        input.value = escuelaBuscada; // Ponemos el texto en el buscador
+        
+        listaMarcadores.forEach(item => {
+            const visible = item.nombre.toLowerCase().includes(escuelaBuscada.toLowerCase());
+            item.marker.setOpacity(visible ? 1 : 0);
+            
+            // Si encontramos la escuela del enlace, hacemos zoom automático y abrimos su información
+            if (visible) {
+                mapa.setView(item.marker.getLatLng(), 16);
+                item.marker.fire('click'); 
+            }
+        });
+    }
+
+    // --- BÚSQUEDA EN TIEMPO REAL ---
     input.addEventListener('input', (e) => {
         const busqueda = e.target.value.toLowerCase();
+
+        // DEEP LINKING: Actualizar el enlace del navegador en tiempo real para poder copiarlo
+        const nuevaUrl = new URL(window.location);
+        if (busqueda.length > 0) {
+            nuevaUrl.searchParams.set('escuela', busqueda);
+        } else {
+            nuevaUrl.searchParams.delete('escuela');
+        }
+        // Cambia la URL en la barra superior sin recargar la página
+        window.history.replaceState({}, '', nuevaUrl);
+
         listaMarcadores.forEach(item => {
             const visible = item.nombre.toLowerCase().includes(busqueda);
             item.marker.setOpacity(visible ? 1 : 0);
@@ -37,9 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DE LA ÚLTIMA MILLA (PEATONAL) ---
     let controlRutaPeatonal = null;
     window.trazarRutaPeatonal = (destino) => {
-        // Verificamos que el GPS esté activo
         if (!window.ubicacionActualUsuario) {
-            alert("📍 Primero activa el botón de '¿Dónde estoy?' para saber desde dónde vas a caminar.");
+            alert("📍 Primero activa el botón de '¿Dónde estoy?' o 'Detener GPS' para saber desde dónde vas a caminar.");
             return;
         }
 
@@ -47,12 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         controlRutaPeatonal = L.Routing.control({
             waypoints: [window.ubicacionActualUsuario, destino],
-            router: L.Routing.osrmv1({ profile: 'foot' }), // 'foot' asegura que busque calles peatonales
+            router: L.Routing.osrmv1({ profile: 'foot' }), 
             lineOptions: { 
-                styles: [{ color: '#8e44ad', opacity: 0.8, weight: 6, dashArray: '10, 10' }] // Línea punteada morada
+                styles: [{ color: '#8e44ad', opacity: 0.8, weight: 6, dashArray: '10, 10' }] 
             },
-            show: false, // Oculta el panel gigante de instrucciones de texto
-            createMarker: function() { return null; } // Evita crear pines extra innecesarios
+            show: false, 
+            createMarker: function() { return null; } 
         }).addTo(mapa);
     };
 });
