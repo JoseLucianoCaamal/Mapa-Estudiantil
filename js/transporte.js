@@ -15,6 +15,10 @@ const coloresRutas = {
     'Xmatkuil': 'hsl(45, 100%, 50%)',
     '11_Zazil_Ha_San_Jose': 'hsl(335, 100%, 38%)', 
     '50_Sur_Villa_Magna': 'hsl(210, 100%, 50%)'
+
+
+    //Ietram
+    'R903_IE_Tram_Fac_de_Ingenieria': 'hsl(34, 100%, 50%)',
 };
 
 export function inicializarRutas(mapa) {
