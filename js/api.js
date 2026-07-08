@@ -64,10 +64,11 @@ export async function cargarEscuelas(mapa) {
         'Xmatkuil',
         '11_Zazil_Ha_San_Jose',
         '50_Sur_Villa_Magna',
-        '50_Serapio_Rendon_Sur', 
+        '50_Serapio_Rendon_Sur',
+        '42_Sur_Leona_Vicario',
 
         //Ietram
-        'R903_Fac_de_Ingenieria'
+        'R903_Fac_Ingenieria'
     ];
     const puntosPorRuta = {}; 
 
