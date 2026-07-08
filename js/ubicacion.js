@@ -1,25 +1,34 @@
 export function activarGeolocalizacion(mapa) {
     const btn = document.getElementById('btn-ubicacion');
+    const btnCentrar = document.getElementById('btn-centrar'); 
     if (!btn) return;
 
     let marcadorUsuario = null;
     let circuloUbicacion = null; 
     let rastreando = false;
 
-    // Variable global para que el enrutador sepa desde dónde caminar
     window.ubicacionActualUsuario = null; 
+
+    // Lógica del botón para centrar manualmente
+    if (btnCentrar) {
+        btnCentrar.addEventListener('click', () => {
+            if (window.ubicacionActualUsuario) {
+                mapa.setView(window.ubicacionActualUsuario, 16);
+            }
+        });
+    }
 
     btn.addEventListener('click', () => {
         if (!rastreando) {
             btn.innerText = "🛑 Detener GPS";
             btn.style.backgroundColor = "#e74c3c";
             btn.style.color = "white";
+            if(btnCentrar) btnCentrar.style.display = "inline-block"; // Mostrar el botón de centrar
             
-            // watch: true activa el seguimiento en tiempo real
+            // CAMBIO CLAVE: setView en false para que no te secuestre la cámara
             mapa.locate({
                 watch: true, 
-                setView: 'untilPan', // Te centra la primera vez, pero luego te deja deslizar el mapa libremente
-                maxZoom: 16, 
+                setView: false, 
                 enableHighAccuracy: true
             });
             rastreando = true;
@@ -28,6 +37,7 @@ export function activarGeolocalizacion(mapa) {
             btn.innerText = "📍 ¿Dónde estoy?";
             btn.style.backgroundColor = "";
             btn.style.color = "";
+            if(btnCentrar) btnCentrar.style.display = "none"; // Ocultar el botón
             rastreando = false;
         }
     });
@@ -35,14 +45,28 @@ export function activarGeolocalizacion(mapa) {
     mapa.on('locationfound', (e) => {
         window.ubicacionActualUsuario = e.latlng;
 
-        // Si es la primera vez que te encuentra, dibuja el círculo. Si ya existía, solo lo mueve a tu nuevo paso.
         if (!marcadorUsuario) {
-            marcadorUsuario = L.marker(e.latlng).addTo(mapa);
+            // Centrar automáticamente solo la primera vez que te encuentra
+            mapa.setView(e.latlng, 16);
+
+            // NUEVO: ICONO PERSONALIZADO PARA EL USUARIO
+            const iconoUser = L.icon({
+                iconUrl: './Img/user.png',
+                iconSize: [45, 45], // Ajusta el tamaño aquí si lo ves muy grande o pequeño
+                iconAnchor: [22, 22],
+                popupAnchor: [0, -22]
+            });
+
+            marcadorUsuario = L.marker(e.latlng, { icon: iconoUser }).addTo(mapa);
+            
+            // Círculo más realista (40 metros en lugar de 1000)
             circuloUbicacion = L.circle(e.latlng, {
-                color: '#27ae60', fillColor: '#27ae60', fillOpacity: 0.15, radius: 1000
+                color: '#27ae60', fillColor: '#27ae60', fillOpacity: 0.15, radius: 40
             }).addTo(mapa);
+            
             marcadorUsuario.bindPopup(`<h3 style="color:#27ae60; margin:0;">📍 Tú estás aquí</h3>`).openPopup();
         } else {
+            // Si ya existías, solo mueve el ícono sin obligar a la cámara a moverse
             marcadorUsuario.setLatLng(e.latlng);
             circuloUbicacion.setLatLng(e.latlng);
         }
@@ -52,6 +76,7 @@ export function activarGeolocalizacion(mapa) {
         console.error("❌ Error de geolocalización:", e.message);
         btn.innerText = "📍 ¿Dónde estoy?"; 
         btn.style.backgroundColor = "";
+        if(btnCentrar) btnCentrar.style.display = "none";
         rastreando = false;
         alert(`No pudimos rastrear tu ubicación.\nMotivo: ${e.message}`);
     });
