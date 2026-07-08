@@ -63,7 +63,8 @@ export async function cargarEscuelas(mapa) {
         '50_Penal',
         'Xmatkuil',
         '11_Zazil_Ha_San_Jose',
-        '50_Sur_Villa_Magna'
+        '50_Sur_Villa_Magna',
+        '50_Serapio_Rendon_Sur'
     ];
     const puntosPorRuta = {}; 
 
