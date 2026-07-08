@@ -67,7 +67,7 @@ export async function cargarEscuelas(mapa) {
         '50_Serapio_Rendon_Sur', 
 
         //Ietram
-        'R903_Fac_de_Ingenieria',
+        'R903_Fac_de_Ingenieria'
     ];
     const puntosPorRuta = {}; 
 
