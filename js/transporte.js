@@ -6,8 +6,11 @@ const coloresRutas = {
     'Periferico': '#2ecc71',// Verde
     '92': '#9b59b6',        // Morado
     '64_Castilla_Camara': 'hsl(236, 73%, 50%)' ,
-    '1_Emiliano_Zapata_2_Paso_Texas': 'hsla(71, 79%, 49%, 0.51)',
-    '2_Periferico_Roble_San_Marcos': 'hsl(132, 42%, 14%)',
+    'R1_Emiliano_Zapata_2_Paso_Texas': 'hsla(71, 79%, 49%, 0.51)',
+    'R2_Periferico_Roble_San_Marcos': 'hsl(132, 42%, 14%)',
+    'R4_60_Periferico_Guadalupana': 'hsl(0, 0%, 50%)',
+    'R5_San_Roque': 'hsl(30, 100%, 50%)',
+    '60_Penal_Hospital_Ohran': 'hsl(200, 100%, 50%)',
 };
 
 export function inicializarRutas(mapa) {

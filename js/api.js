@@ -51,7 +51,15 @@ export async function cargarEscuelas(mapa) {
 
     // 2. Lógica de Rutas
     const rutasDisponibles = [
-        '72', '92', 'Periferico', '64_Castilla_Camara', '1_Emiliano_Zapata_2_Paso_Texas', '2_Periferico_Roble_San_Marcos'
+        '72', 
+        '92', 
+        'Periferico', 
+        '64_Castilla_Camara', 
+        'R1_Emiliano_Zapata_2_Paso_Texas', 
+        'R2_Periferico_Roble_San_Marcos',
+        'R4_60_Periferico_Guadalupana',
+        'R5_San_Roque',
+        '60_Penal_Hospital_Ohran',
     ];
     const puntosPorRuta = {}; 
 
