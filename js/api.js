@@ -66,9 +66,15 @@ export async function cargarEscuelas(mapa) {
         '50_Sur_Villa_Magna',
         '50_Serapio_Rendon_Sur',
         '42_Sur_Leona_Vicario',
+        '42_Sur_Cielo_Alto',
+        '42_Cruz_Roja_Salvador_Alvarado',
+        '21_Vicente_Solis',
+        '22_Quinta_Avenida',
+        'San_Haroldo',
 
         //Ietram
-        'R903_Fac_Ingenieria'
+        'R903_Fac_Ingenieria',
+        'R907_Plancha_Aeropuerto'
     ];
     const puntosPorRuta = {}; 
 
@@ -136,7 +142,8 @@ export async function cargarEscuelas(mapa) {
             div.innerHTML += `<p>Rutas a menos de 1km:</p>`;
             rutasCercanas.forEach(ruta => {
                 const btn = document.createElement('button');
-                btn.innerText = `Ver Ruta ${ruta}`;
+                const nombreLimpio = ruta.replaceAll('_', ' ');
+                btn.innerText = `Ver Ruta ${nombreLimpio}`;
                 btn.style.cssText = "width:100%; padding:8px; background:#e67e22; color:white; border:none; margin-bottom:5px; border-radius:4px;";
                 btn.onclick = () => window.dibujarRuta(ruta);
                 div.appendChild(btn);
