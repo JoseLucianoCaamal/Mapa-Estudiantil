@@ -60,6 +60,8 @@ export async function cargarEscuelas(mapa) {
         'R4_60_Periferico_Guadalupana',
         'R5_San_Roque',
         '60_Penal_Hospital_Ohran',
+        '50_Penal',
+        'Xmatkuil'
     ];
     const puntosPorRuta = {}; 
 

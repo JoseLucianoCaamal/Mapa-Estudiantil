@@ -11,6 +11,8 @@ const coloresRutas = {
     'R4_60_Periferico_Guadalupana': 'hsl(0, 0%, 50%)',
     'R5_San_Roque': 'hsl(30, 100%, 50%)',
     '60_Penal_Hospital_Ohran': 'hsl(200, 100%, 50%)',
+    '50_Penal': 'hsl(300, 100%, 50%)',
+    'Xmatkuil': 'hsl(45, 100%, 50%)',
 };
 
 export function inicializarRutas(mapa) {
