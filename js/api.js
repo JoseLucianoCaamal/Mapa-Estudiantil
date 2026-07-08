@@ -61,7 +61,9 @@ export async function cargarEscuelas(mapa) {
         'R5_San_Roque',
         '60_Penal_Hospital_Ohran',
         '50_Penal',
-        'Xmatkuil'
+        'Xmatkuil',
+        '11_Zazil_Ha_San_Jose',
+        '50_Sur_Villa_Magna'
     ];
     const puntosPorRuta = {}; 
 
@@ -81,7 +83,7 @@ export async function cargarEscuelas(mapa) {
         for (let ruta in puntosPorRuta) {
             const puntos = puntosPorRuta[ruta];
             for (let punto of puntos) {
-                if (latlng.distanceTo(punto) <= 1000) { cercanas.push(ruta); break; }
+                if (latlng.distanceTo(punto) <= 500) { cercanas.push(ruta); break; }
             }
         }
         return cercanas;

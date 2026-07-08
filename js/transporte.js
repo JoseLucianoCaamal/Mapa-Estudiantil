@@ -2,9 +2,9 @@ let capaRutaActual = null;
 
 // --- DICCIONARIO DE COLORES PARA LAS RUTAS ---
 const coloresRutas = {
-    '72': '#e74c3c',        // Rojo
-    'Periferico': '#2ecc71',// Verde
-    '92': '#9b59b6',        // Morado
+    '72': '#e74c3c',        
+    'Periferico': '#2ecc71',
+    '92': '#9b59b6',        
     '64_Castilla_Camara': 'hsl(236, 73%, 50%)' ,
     'R1_Emiliano_Zapata_2_Paso_Texas': 'hsla(71, 79%, 49%, 0.51)',
     'R2_Periferico_Roble_San_Marcos': 'hsl(132, 42%, 14%)',
@@ -13,6 +13,8 @@ const coloresRutas = {
     '60_Penal_Hospital_Ohran': 'hsl(200, 100%, 50%)',
     '50_Penal': 'hsl(300, 100%, 50%)',
     'Xmatkuil': 'hsl(45, 100%, 50%)',
+    '11_Zazil_Ha_San_Jose': 'hsl(335, 100%, 38%)', 
+    '50_Sur_Villa_Magna': 'hsl(210, 100%, 50%)'
 };
 
 export function inicializarRutas(mapa) {
