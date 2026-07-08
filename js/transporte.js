@@ -18,7 +18,7 @@ const coloresRutas = {
 
 
     //Ietram
-    'R903_IE_Tram_Fac_de_Ingenieria': 'hsl(34, 100%, 50%)',
+    'R903_Fac_de_Ingenieria': 'hsl(34, 100%, 50%)',
 };
 
 export function inicializarRutas(mapa) {
