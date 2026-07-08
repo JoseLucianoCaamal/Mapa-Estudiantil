@@ -74,7 +74,8 @@ export async function cargarEscuelas(mapa) {
 
         //Ietram
         'R903_Fac_Ingenieria',
-        'R907_Plancha_Aeropuerto'
+        'R907_Plancha_Aeropuerto',
+        'R906_La_Plancha_UMAN'
     ];
     const puntosPorRuta = {}; 
 

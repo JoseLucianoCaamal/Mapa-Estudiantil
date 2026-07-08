@@ -23,7 +23,8 @@ const coloresRutas = {
     'San_Haroldo': 'hsl(60, 100%, 50%)',
     //Ietram
     'R903_Fac_Ingenieria': 'hsl(34, 100%, 50%)',
-    'R907_Plancha_Aeropuerto': 'hsl(210, 100%, 50%)'
+    'R907_Plancha_Aeropuerto': 'hsl(210, 100%, 50%)',
+    'R906_La_Plancha_UMAN': 'hsl(120, 100%, 50%)'
 };
 
 export function inicializarRutas(mapa) {
