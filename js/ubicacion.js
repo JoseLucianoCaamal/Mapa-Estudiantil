@@ -52,7 +52,7 @@ export function activarGeolocalizacion(mapa) {
             // NUEVO: ICONO PERSONALIZADO PARA EL USUARIO
             const iconoUser = L.icon({
                 iconUrl: './Img/user.png',
-                iconSize: [45, 45], // Ajusta el tamaño aquí si lo ves muy grande o pequeño
+                iconSize: [32, 32], // Ajusta el tamaño aquí si lo ves muy grande o pequeño
                 iconAnchor: [22, 22],
                 popupAnchor: [0, -22]
             });

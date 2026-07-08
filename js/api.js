@@ -18,7 +18,7 @@ export async function cargarEscuelas(mapa) {
         { nombre: "INTER Centro Universitario Interamericano", lat: 20.990406, lon: -89.619352, cat: 'uni' },
         { nombre: "Universidad del Sur (Santa Lucía)", lat: 20.972079, lon: -89.623262, cat: 'uni' },
         { nombre: "Instituto De Ciencias Humanas", lat: 20.983865, lon: -89.608025, cat: 'uni' },
-        { nombre: "Centro Institucional de Lenguas (CIL) - UADY", lat: 20.981035, lon: -89.598227, cat: 'uni' },
+        { nombre: "Centro Institucional de Lenguas (CIL) - UADY", lat: 20.977809, lon: -89.599037, cat: 'uni' },
         { nombre: "Centro de Estudios Superiores CTM Justo Sierra", lat: 20.966319, lon: -89.589445, cat: 'uni' },
         { nombre: "Campus Administración Central UADY", lat: 20.970000, lon: -89.589799, cat: 'uni' },
         { nombre: "Centro de Formación Profesional de Yucatán UM", lat: 20.971761, lon: -89.615084, cat: 'uni' },
