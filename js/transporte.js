@@ -14,7 +14,7 @@ const coloresRutas = {
     '50_Penal': 'hsl(300, 100%, 50%)',
     'Xmatkuil': 'hsl(45, 100%, 50%)',
     '11_Zazil_Ha_San_Jose': 'hsl(335, 100%, 38%)', 
-    '50_Sur_Villa_Magna': 'hsl(210, 100%, 50%)',
+    '50_Sur_Villa_Magna': 'hsl(s210, 100%, 50%)',
     '42_Sur_Leona_Vicario': 'hsl(204, 100%, 50%)',
     '42_Sur_Cielo_Alto': 'hsl(120, 100%, 50%)',
     '42_Cruz_Roja_Salvador_Alvarado': 'hsl(300, 100%, 50%)',
