@@ -71,6 +71,7 @@ export async function cargarEscuelas(mapa) {
         '21_Vicente_Solis',
         '22_Quinta_Avenida',
         'San_Haroldo',
+        'Santa_Isabel',
 
         //Ietram
         'R903_Fac_Ingenieria',
