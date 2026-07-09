@@ -70,8 +70,8 @@ export async function cargarEscuelas(mapa) {
         '42_Cruz_Roja_Salvador_Alvarado',
         '21_Vicente_Solis',
         '22_Quinta_Avenida',
-        'San_Haroldo',
-        'Santa_Isabel',
+        '23_San_Haroldo',
+        '25_Santa_Isabel',
 
         //Ietram
         'R903_Fac_Ingenieria',

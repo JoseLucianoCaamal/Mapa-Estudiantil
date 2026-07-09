@@ -20,8 +20,8 @@ const coloresRutas = {
     '42_Cruz_Roja_Salvador_Alvarado': 'hsl(300, 100%, 50%)',
     '21_Vicente_Solis': 'hsl(240, 100%, 50%)',
     '22_Quinta_Avenida': 'hsl(180, 100%, 50%)',
-    'San_Haroldo': 'hsl(60, 100%, 50%)',
-    'Santa_Isabel': 'hsl(0, 100%, 50%)',
+    '23_San_Haroldo': 'hsl(60, 100%, 50%)',
+    '25_Santa_Isabel': 'hsl(0, 100%, 50%)',
     //Ietram
     'R903_Fac_Ingenieria': 'hsl(34, 100%, 50%)',
     'R907_Plancha_Aeropuerto': 'hsl(210, 100%, 50%)',
