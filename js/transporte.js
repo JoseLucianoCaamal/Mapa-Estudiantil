@@ -22,6 +22,9 @@ const coloresRutas = {
     '22_Quinta_Avenida': 'hsl(180, 100%, 50%)',
     '23_San_Haroldo': 'hsl(60, 100%, 50%)',
     '25_Santa_Isabel': 'hsl(0, 100%, 50%)',
+    'Galvez_Villas_Oriente_R1': 'hsl(15, 100%, 50%)',
+    'Kanasin_Naranjos_2': 'hsl(195, 100%, 50%)',
+    'Vergel_1': 'hsl(75, 100%, 50%)',
     //Ietram
     'R903_Fac_Ingenieria': 'hsl(34, 100%, 50%)',
     'R907_Plancha_Aeropuerto': 'hsl(210, 100%, 50%)',

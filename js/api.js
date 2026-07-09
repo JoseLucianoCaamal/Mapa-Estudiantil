@@ -72,6 +72,9 @@ export async function cargarEscuelas(mapa) {
         '22_Quinta_Avenida',
         '23_San_Haroldo',
         '25_Santa_Isabel',
+        'Galvez_Villas_Oriente_R1',
+        'Kanasin_Naranjos_2',
+        'Vergel_1',
 
         //Ietram
         'R903_Fac_Ingenieria',
