@@ -96,7 +96,7 @@ export async function cargarEscuelas(mapa) {
         for (let ruta in puntosPorRuta) {
             const puntos = puntosPorRuta[ruta];
             for (let punto of puntos) {
-                if (latlng.distanceTo(punto) <= 500) { cercanas.push(ruta); break; }
+                if (latlng.distanceTo(punto) <= 2000) { cercanas.push(ruta); break; }
             }
         }
         return cercanas;
@@ -125,7 +125,7 @@ export async function cargarEscuelas(mapa) {
         marker.on('click', () => {
             if (circuloActual) mapa.removeLayer(circuloActual);
             circuloActual = L.circle(markerLatlng, { 
-                radius: 1000, 
+                radius: 2000, 
                 color: '#3498db', 
                 fillOpacity: 0.15 
             }).addTo(mapa);
