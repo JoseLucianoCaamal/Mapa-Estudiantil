@@ -79,7 +79,10 @@ export async function cargarEscuelas(mapa) {
         //Ietram
         'R903_Fac_Ingenieria',
         'R907_Plancha_Aeropuerto',
-        'R906_La_Plancha_UMAN'
+        'R906_La_Plancha_UMAN',
+        'R901_La_Plancha_Estacion_Teya',
+        'R902_La_Plancha_Kanasin',
+        'R905_Centro_Uman_Tren_Maya'
     ];
     const puntosPorRuta = {}; 
 

@@ -28,7 +28,10 @@ const coloresRutas = {
     //Ietram
     'R903_Fac_Ingenieria': 'hsl(34, 100%, 50%)',
     'R907_Plancha_Aeropuerto': 'hsl(210, 100%, 50%)',
-    'R906_La_Plancha_UMAN': 'hsl(120, 100%, 50%)'
+    'R906_La_Plancha_UMAN': 'hsl(120, 100%, 50%)',
+    'R901_La_Plancha_Estacion_Teya': 'hsl(300, 100%, 50%)',
+    'R902_La_Plancha_Kanasin': 'hsl(150, 100%, 50%)',
+    'R905_Centro_Uman_Tren_Maya': 'hsl(0, 100%, 50%)'
 };
 
 export function inicializarRutas(mapa) {
