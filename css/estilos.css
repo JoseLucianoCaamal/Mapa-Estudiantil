@@ -253,3 +253,23 @@ input:checked + .slider:before { transform: translateX(20px); }
         gap: 8px;
     }
 }
+
+/* --- CONTROL DE SCROLL EN LOS POPUPS DEL MAPA --- */
+.leaflet-popup-content {
+    max-height: 250px; /* Altura máxima permitida antes de que aparezca el scroll */
+    overflow-y: auto;  /* Si rebasa la altura, aparece la barra para deslizar hacia abajo */
+    overflow-x: hidden; /* Evita que se mueva hacia los lados por accidente */
+    padding-right: 5px; /* Da un pequeñito espacio para que la barra no tape el texto */
+}
+
+/* Opcional: Hacer la barrita de scroll más bonita y delgada (estilo moderno) */
+.leaflet-popup-content::-webkit-scrollbar {
+    width: 6px;
+}
+.leaflet-popup-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 74, 153, 0.4); 
+    border-radius: 10px;
+}
+body.dark-mode .leaflet-popup-content::-webkit-scrollbar-thumb {
+    background: rgba(102, 178, 255, 0.4); 
+}
